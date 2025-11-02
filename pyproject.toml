@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "ai-offer-assistant"
+version = "0.1.0"
+description = "AI-powered offer generation assistant (PoC)"
+authors = ["J.W."]
+license = "MIT"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.9.0"]
+build-backend = "poetry.core.masonry.api"
+
