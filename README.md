@@ -1,6 +1,3 @@
-# ai-offer-assistant
-AI-powered offer generation assistant for energy technology companies (PoC)
-
 # AI Offer Assistant
 
 This repository contains a **personal portfolio proof-of-concept** of an AI-powered assistant that helps teams prepare technical offers faster and more accurately.  
