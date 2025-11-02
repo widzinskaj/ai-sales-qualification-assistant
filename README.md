@@ -20,24 +20,26 @@ It’s inspired by real workflows in the **energy storage sector**, but **uses o
 ## Tech Stack
 | Layer | Tool |
 |-------|------|
-| LLM | ... |
+| LLM | ...|
 | Embeddings | ... |
 | Vector DB | ... |
 | Orchestration | ... |
-| UI (optional) |... |
+| UI (optional) | ... |
 | Output | ... |
 
 ---
 
-##  Structure (pending)
-'''
-/data – synthetic / public product specs
-/queries – sample client requests
-/prompts – system + RAG templates
-/docs – documentation & checklists
-/notebooks – prototypes (LangFlow)
+## Structure (coming soon)
+
+```
+/data – synthetic / public product specs  
+/queries – sample client requests  
+/prompts – system + RAG templates  
+/docs – documentation & checklists  
+/notebooks – prototypes (LangFlow / Jupyter)  
 /local-demo/ – local-only demo folder (excluded from Git)
-'''
+```
+
 ---
 
 ## Project roadmap
@@ -46,12 +48,11 @@ It’s inspired by real workflows in the **energy storage sector**, but **uses o
 3. Stage 3 — RAG demo pipeline (LangFlow)  
 4. Stage 4 — PDF offer generation output
 
-
 ---
+
 ## Author
 Joanna Widzińska
 LinkedIn: https://www.linkedin.com/in/joanna-widzi%C5%84ska/
-
 ---
 
 ### Ready-to-Publish Notes
