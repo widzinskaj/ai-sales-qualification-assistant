@@ -208,3 +208,8 @@ __marimo__/
 
 # Local-only demo (never commit)
 local-demo/
+
+# Vector database (local RAG)
+chroma_db/
+
+
