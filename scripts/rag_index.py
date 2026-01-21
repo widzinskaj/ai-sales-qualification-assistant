@@ -78,7 +78,10 @@ def main() -> None:
     log("Embedding model loaded")
 
     # 2) Discover md files (recursive)
-    md_files = sorted(data_dir.rglob("*.md"))
+    md_files = sorted(
+    p for p in data_dir.rglob("*.md")
+    if p.name.lower() != "readme.md"
+)
     log(f"Found {len(md_files)} .md files under /data")
     for f in md_files:
         log(f" - {f.relative_to(base_dir)}")
