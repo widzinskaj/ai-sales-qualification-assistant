@@ -11,7 +11,7 @@ and scalable capacity.
 - Battery Technology: Lithium-ion (LFP)
 - Round-trip Efficiency: ~90%
 - Design Lifetime: 12–15 years
-- Expected Cycle Life: ~6,000 cyclesgi
+- Expected Cycle Life: ~6,000 cycles
 - Operating Temperature Range: -5°C to +40°C
 
 ## Modularity
