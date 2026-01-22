@@ -6,79 +6,78 @@ from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
 
 
-def log(msg: str):
+def log(msg: str) -> None:
     print(f"[rag_search] {msg}", flush=True)
 
 
-def load_query_text(path: Path) -> str:
+def load_text(path: Path) -> str:
     text = path.read_text(encoding="utf-8").strip()
     if not text:
-        raise ValueError("Query email is empty")
+        raise ValueError(f"File is empty: {path}")
     return text
 
 
-def main():
-    base_dir = Path(__file__).resolve().parent.parent
+def get_rag_context(
+    email_text: str,
+    top_k: int = 2,
+    persist_dir: str = "chroma_db",
+    collection_name: str = "bess_public",
+    model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
+) -> str:
+    """
+    Returns ranked RAG context as plain text.
+    No business logic, no interpretation.
+    """
 
-    query_path = base_dir / "queries" / "client_email_01.txt"
-    persist_dir = os.getenv("CHROMA_PERSIST_DIR", "chroma_db")
-    collection_name = os.getenv("CHROMA_COLLECTION", "bess_public")
-    model_name = os.getenv(
-        "EMBEDDING_MODEL",
-        "sentence-transformers/all-MiniLM-L6-v2",
-    )
-
-    log(f"Loading customer email from: {query_path}")
-    query_text = load_query_text(query_path)
-
-    log("Loading embedding model...")
     embedder = SentenceTransformer(model_name)
 
-    log("Connecting to Chroma...")
     client = chromadb.PersistentClient(
         path=persist_dir,
         settings=Settings(anonymized_telemetry=False),
     )
-
     collection = client.get_collection(collection_name)
 
-    log("Computing query embedding...")
-    query_embedding = embedder.encode([query_text])[0]
+    query_embedding = embedder.encode([email_text])[0]
 
-    log("Running semantic search (top_k=3)...")
     results = collection.query(
         query_embeddings=[query_embedding.tolist()],
-        n_results=3,
+        n_results=top_k,
     )
 
     documents = results.get("documents", [[]])[0]
     metadatas = results.get("metadatas", [[]])[0]
 
-    # ---- FILTERING ----
-    MIN_CHARS = 200
-    filtered = []
-    seen_docs = set()
+    context_blocks = []
 
-    for doc, meta in zip(documents, metadatas):
-        if len(doc.strip()) < MIN_CHARS:
-            continue
+    for rank, (doc, meta) in enumerate(zip(documents, metadatas), start=1):
+        source_name = Path(meta.get("source_path", "unknown")).name
+        doc_id = meta.get("doc_id", "unknown")
 
-        doc_id = meta.get("doc_id")
-        if doc_id in seen_docs:
-            continue
+        context_blocks.append(
+            f"Rank {rank}\n"
+            f"Source: {source_name}\n"
+            f"Doc ID: {doc_id}\n"
+            f"Excerpt:\n{doc.strip()}\n"
+        )
 
-        seen_docs.add(doc_id)
-        filtered.append((doc, meta))
+    return "\n---\n".join(context_blocks)
 
-    print("\n=== TOP MATCHING PRODUCT DOCUMENTATION (FILTERED) ===\n")
 
-    for i, (doc, meta) in enumerate(filtered, start=1):
-        print(f"--- Match #{i} ---")
-        print(f"Source: {meta.get('source_path')}")
-        print(doc[:600])
-        print()
+def main() -> None:
+    base_dir = Path(__file__).resolve().parent.parent
 
-    print("=== END ===\n")
+    email_file = os.getenv("RAG_EMAIL_FILE", "client_email_01.txt")
+    email_path = base_dir / "queries" / email_file
+
+    log(f"Loading customer email from: {email_path}")
+    customer_email = load_text(email_path)
+
+    log("Running RAG search...")
+    rag_context = get_rag_context(customer_email, top_k=2)
+
+    print("\n=== RAG CONTEXT ===\n")
+    print(rag_context)
+    print("\n=== END ===\n")
 
 
 if __name__ == "__main__":
