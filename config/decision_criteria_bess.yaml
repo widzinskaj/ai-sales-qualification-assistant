@@ -1,25 +1,60 @@
-  - id: technical_scale
-    label: Technical scale
-    purpose: Estimate the approximate size of the energy storage system.
-    questions:
+decision_criteria:
+  - id: application_context
+    label: Kontekst instalacji
+    description: Informacje ogólne o typie obiektu i celu instalacji.
+    fields:
+      - id: object_type
+        description: Typ obiektu (np. dom jednorodzinny, firma).
+        question_pl: "Jakiego typu obiektu dotyczy planowana instalacja magazynu energii?"
+      - id: installation_goal
+        description: Główny cel instalacji.
+        question_pl: "Jaki jest główny cel instalacji magazynu energii (autokonsumpcja, zasilanie awaryjne, oba)?"
+
+  - id: energy_scale
+    label: Skala energetyczna
+    description: Informacje potrzebne do wstępnego doboru mocy i pojemności.
+    fields:
       - id: estimated_capacity
-        question_pl: >
-          Czy mają Państwo orientacyjne wyobrażenie o skali magazynu energii,
-          np. rzędu kilkudziesięciu kWh, kilkuset kWh lub więcej?
-        question_en: >
-          Do you have an approximate idea of the required energy capacity,
-          e.g. tens of kWh, hundreds of kWh, or more?
-
+        description: Orientacyjna pojemność magazynu.
+        question_pl: "Czy mają Państwo orientacyjne wyobrażenie o wymaganej pojemności magazynu energii (np. kilkadziesiąt kWh, kilkaset kWh)?"
       - id: estimated_power
-        question_pl: >
-          Czy znana jest orientacyjna moc instalacji lub przyłącza
-          (np. rzędu kilkudziesięciu lub kilkuset kW)?
-        question_en: >
-          Is the approximate system or grid connection power known
-          (e.g. tens or hundreds of kW)?
+        description: Orientacyjna moc systemu lub przyłącza.
+        question_pl: "Czy znana jest orientacyjna moc instalacji lub przyłącza (np. kilkanaście–kilkadziesiąt kW, powyżej 100 kW)?"
 
-      - id: scalability
-        question_pl: >
-          Czy istotna jest możliwość modułowej rozbudowy systemu w przyszłości?
-        question_en: >
-          Is future modular expansion of the system important?
+  - id: pv_integration
+    label: Integracja z PV
+    description: Informacje o współpracy magazynu z fotowoltaiką.
+    fields:
+      - id: existing_pv
+        description: Informacja, czy instalacja PV już istnieje.
+        question_pl: "Czy magazyn energii ma współpracować z istniejącą instalacją fotowoltaiczną?"
+      - id: inverter_info
+        description: Informacje o falowniku.
+        question_pl: "Czy znany jest typ lub producent falownika (jeśli dotyczy)?"
+
+  - id: operating_mode
+    label: Tryb pracy
+    description: Sposób użytkowania magazynu energii.
+    fields:
+      - id: operating_priority
+        description: Priorytet pracy magazynu.
+        question_pl: "Czy magazyn energii ma pracować głównie w trybie autokonsumpcji, zasilania awaryjnego czy w trybie mieszanym?"
+      - id: backup_expectations
+        description: Oczekiwania co do pracy awaryjnej.
+        question_pl: "Czy istotny jest określony czas podtrzymania zasilania w trybie awaryjnym?"
+
+  - id: scalability
+    label: Rozbudowa systemu
+    description: Informacje o przyszłej elastyczności.
+    fields:
+      - id: future_expansion
+        description: Potrzeba rozbudowy w przyszłości.
+        question_pl: "Czy istotna jest możliwość modułowej rozbudowy systemu w przyszłości?"
+
+  - id: constraints
+    label: Ograniczenia instalacyjne
+    description: Wstępne warunki techniczne.
+    fields:
+      - id: space_constraints
+        description: Ograniczenia przestrzenne lub lokalizacyjne.
+        question_pl: "Czy istnieją istotne ograniczenia przestrzenne lub lokalizacyjne dla instalacji magazynu energii?"
