@@ -1,4 +1,6 @@
-# Baseline model – illustrates language limitations of small LLMs 
+<!--
+Baseline model – illustrates language limitations of small LLMs 
+-->
 
 === LLM RESPONSE ===
 
