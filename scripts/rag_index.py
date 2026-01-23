@@ -1,4 +1,6 @@
+
 from __future__ import annotations
+MIN_CHUNK_CHARS = 200
 
 import os
 import time
@@ -100,6 +102,9 @@ def main() -> None:
 
         doc_id = path.stem
         for i, ch in enumerate(chunks):
+            if len(ch.strip()) < MIN_CHUNK_CHARS:
+                continue
+
             all_chunks.append(
                 Chunk(
                     doc_id=doc_id,
@@ -107,7 +112,8 @@ def main() -> None:
                     text=ch,
                     source_path=str(path),
                 )
-            )
+    )
+
 
     log(f"Total chunks prepared: {len(all_chunks)}")
     if not all_chunks:
@@ -133,7 +139,16 @@ def main() -> None:
     # 5) Compute embeddings (with timing)
     texts = [c.text for c in all_chunks]
     ids = [c.chunk_id for c in all_chunks]
-    metas = [{"doc_id": c.doc_id, "source_path": c.source_path} for c in all_chunks]
+    metas = [
+    {
+        "doc_id": c.doc_id,
+        "source_path": c.source_path,
+        "chunk_id": c.chunk_id,
+        "char_len": len(c.text),
+    }
+    for c in all_chunks
+    ]
+
 
     log("Computing embeddings...")
     t0 = time.time()

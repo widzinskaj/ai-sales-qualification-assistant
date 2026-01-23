@@ -1,0 +1,4 @@
+Dzień dobry, 
+szukam rozwiązania, które pozwalałoby w prosty sposób integrować moduły magazynu energii z falownikiem, najlepiej bezprzewodowo.
+Czy mają Państwo coś, co rozwiązuje taki problem?
+Pozdrawiam.
