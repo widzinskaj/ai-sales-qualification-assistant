@@ -17,16 +17,38 @@ def load_text(path: Path) -> str:
     return text
 
 
+def shorten(text: str, max_chars: int = 400) -> str:
+    """
+    Hard cut for readability.
+    No summarization, no interpretation.
+    """
+    text = text.strip().replace("\n", " ")
+    return text[:max_chars] + ("..." if len(text) > max_chars else "")
+
+
+def extract_overlap(query: str, doc: str, max_terms: int = 5) -> list[str]:
+    """
+    Pure token overlap.
+    Diagnostic only, not used for decisions.
+    """
+    q_terms = set(query.lower().split())
+    d_terms = set(doc.lower().split())
+    overlap = sorted(q_terms & d_terms)
+    return overlap[:max_terms]
+
+
 def get_rag_context(
     email_text: str,
-    top_k: int = 2,
+    top_k: int = 4,
     persist_dir: str = "chroma_db",
     collection_name: str = "bess_public",
     model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
 ) -> str:
     """
-    Returns ranked RAG context as plain text.
-    No business logic, no interpretation.
+    Returns short, comparable RAG context blocks.
+    - 1 block per document (deduplicated by doc_id)
+    - No business logic
+    - No interpretation
     """
 
     embedder = SentenceTransformer(model_name)
@@ -42,25 +64,42 @@ def get_rag_context(
     results = collection.query(
         query_embeddings=[query_embedding.tolist()],
         n_results=top_k,
+        include=["documents", "metadatas", "distances"],
     )
 
     documents = results.get("documents", [[]])[0]
     metadatas = results.get("metadatas", [[]])[0]
+    distances = results.get("distances", [[]])[0]
 
     context_blocks = []
 
-    for rank, (doc, meta) in enumerate(zip(documents, metadatas), start=1):
-        source_name = Path(meta.get("source_path", "unknown")).name
+    seen_docs: set[str] = set()
+    rank = 1
+
+    for doc, meta, dist in zip(documents, metadatas, distances):
         doc_id = meta.get("doc_id", "unknown")
 
+        # Deduplicate: 1 document = 1 RAG block
+        if doc_id in seen_docs:
+            continue
+
+        seen_docs.add(doc_id)
+
+        source_name = Path(meta.get("source_path", "unknown")).name
+        overlap_terms = extract_overlap(email_text, doc)
+
         context_blocks.append(
-            f"Rank {rank}\n"
+            f"[RAG-{rank}]\n"
             f"Source: {source_name}\n"
             f"Doc ID: {doc_id}\n"
-            f"Excerpt:\n{doc.strip()}\n"
+            f"Distance: {dist:.3f}\n"
+            f"Overlap terms: {', '.join(overlap_terms) if overlap_terms else 'n/a'}\n"
+            f"Excerpt:\n\"{shorten(doc)}\""
         )
 
-    return "\n---\n".join(context_blocks)
+        rank += 1
+
+    return "\n\n---\n\n".join(context_blocks)
 
 
 def main() -> None:
@@ -73,7 +112,7 @@ def main() -> None:
     customer_email = load_text(email_path)
 
     log("Running RAG search...")
-    rag_context = get_rag_context(customer_email, top_k=2)
+    rag_context = get_rag_context(customer_email, top_k=4)
 
     print("\n=== RAG CONTEXT ===\n")
     print(rag_context)
